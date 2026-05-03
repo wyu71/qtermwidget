@@ -23,10 +23,13 @@
 
 // Qt
 #include <QHash>
+#include <QDir>
 #include <QList>
 #include <QKeySequence>
 #include <QMetaType>
 #include <QVarLengthArray>
+#include <optional>
+
 
 // Konsole
 //#include "konsole_export.h"
@@ -508,6 +511,19 @@ public:
     /** Returns the global KeyboardTranslatorManager instance. */
    static KeyboardTranslatorManager* instance();
 
+    /**
+     *  Set the directory to look for keyboard layout files
+     * 
+     *  if the directory doesn't exist, resets it to std::nullopt
+     */
+    void setTranslatorBaseDir(const QString& path);
+
+    /** 
+     * Set the custom layout directory to std::nullopt, meaning the compiled-in
+     * default will be used to search for layouts.
+     */
+    void clearTranslatorBaseDir();
+
 private:
     static const QByteArray defaultTranslatorText;
 
@@ -517,6 +533,10 @@ private:
     KeyboardTranslator* loadTranslator(QIODevice* device,const QString& name);
 
     bool saveTranslator(const KeyboardTranslator* translator);
+
+    // Optional base directory to search for keyboard layouts, not used if empty
+    std::optional<QDir> _translatorBaseDir;
+
     QString findTranslatorPath(const QString& name);
 
     QHash<QString,KeyboardTranslator*> _translators; // maps translator-name -> KeyboardTranslator
